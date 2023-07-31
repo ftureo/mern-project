@@ -1,14 +1,11 @@
 import { Router } from 'express';
+import { testGet, testPost } from '../controllers/testController.js';
 
 const router = Router();
 
-router.get("/test", (request, response) => {
-    response.send("Hello world by GET method");
-});
+router.get("/test", testGet);
 
-router.post("/test", (request, response) => {
-    response.send("Hello world by POST method");
-});
+router.post("/test", testPost );
 
 router.put("/test", (request, response) => {
     response.send("Hello world by PUT method");
