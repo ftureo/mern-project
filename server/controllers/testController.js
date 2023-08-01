@@ -3,8 +3,6 @@ export const testGet = (request, response) => {
 }
 
 export const testPost = (request, response) => {
-    console.log({ body: request.body })
-
     response.send({
         message: "Hello world by POST method through controller",
         body: request.body
