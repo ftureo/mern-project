@@ -1,10 +1,13 @@
 import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
 
+dotenv.config()
+
+// TODO: ADD CONFIG IN .ENV
 cloudinary.config({
-    cloud_name: "mern-project-fabi",
-    api_key: "645983347527336",
-    api_secret: "rB8QxbJFnk7SdIhtasqPIm7sCU8",
-    
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export const uploadImageToCloudinary = async (filePath) => {
@@ -12,3 +15,7 @@ export const uploadImageToCloudinary = async (filePath) => {
         folder: "books"
     });
 };
+
+export const deleteImageFromCloudinary = async (publicId) => {
+    return await cloudinary.uploader.destroy(publicId);
+}
