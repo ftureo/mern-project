@@ -1,15 +1,33 @@
 import fs from "fs-extra";
 
-import { uploadImageToCloudinary, deleteImageFromCloudinary } from "../utils/cloudinary.js";
+import {
+    uploadImageToCloudinary,
+    deleteImageFromCloudinary,
+} from "../utils/cloudinary.js";
 import Book from "../models/book.model.js";
 
 export const getBooks = async (request, response) => {
-    const books = await Book.find()
+    const books = await Book.find();
 
     response.send({
         message: "Books retrieved successfully",
-        books
-    })
+        books,
+    });
+};
+
+export const getBookById = async (request, response) => {
+    const { bookId } = request.params;
+    const book = await Book.findById(bookId);
+
+    if (!book)
+        return response
+            .status(404)
+            .send({ message: `Book with id ${bookId} not was found` });
+
+    response.send({
+        message: "Book retrieved successfully",
+        book,
+    });
 };
 
 export const createBook = async (request, response) => {
@@ -26,7 +44,6 @@ export const createBook = async (request, response) => {
             publicId: resultUpload?.public_id,
         };
         await fs.remove(bookImage.tempFilePath);
-        console.log({ resultUpload });
     }
 
     const newBook = new Book({
@@ -48,25 +65,22 @@ export const createBook = async (request, response) => {
 
 export const deleteBook = async (request, response) => {
     const { bookId } = request.params;
-    console.log({ bookId });
-
     try {
         const removedBook = await Book.findByIdAndDelete(bookId);
-        if(!removedBook) return response.status(404).send({ message: `Book with id ${bookId} not was found` });
+        if (!removedBook)
+            return response
+                .status(404)
+                .send({ message: `Book with id ${bookId} not was found` });
 
-        console.log({ removedBook });
-
-        if(removedBook?.image?.publicId){
+        if (removedBook?.image?.publicId) {
             await deleteImageFromCloudinary(removedBook.image.publicId);
         }
 
         response.status(204).send({
             message: `Book with id ${bookId} deleted successfully`,
-            removedBook
-        })
-
-
-    } catch (error){
+            removedBook,
+        });
+    } catch (error) {
         console.log(error);
         throw new Error(`Error deleting book with id ${bookId}`);
     }
