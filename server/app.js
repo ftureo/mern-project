@@ -6,6 +6,7 @@ import fileUpload from "express-fileupload";
 import testRoutes from "./routes/test.routes.js";
 import booksRoutes from "./routes/books.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import { createRoles } from "./utils/roles-initializer.js";
 
 const app = express();
 app.use(morgan("dev"));
@@ -17,8 +18,10 @@ app.use(
     })
 );
 
-app.use("/api", testRoutes)
-app.use("/api", booksRoutes)
-app.use("/api", userRoutes)
+createRoles();
+
+app.use("/api", testRoutes);
+app.use("/api", booksRoutes);
+app.use("/api/auth", userRoutes);
 
 export default app;
