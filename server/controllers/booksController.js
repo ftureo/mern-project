@@ -34,33 +34,37 @@ export const createBook = async (request, response) => {
     const { bookName, author } = request.body;
     let image;
 
-    if (request.files?.bookImage) {
-        const { bookImage } = request.files;
-        const resultUpload = await uploadImageToCloudinary(
-            bookImage.tempFilePath
-        );
-        image = {
-            urlImage: resultUpload?.secure_url,
-            publicId: resultUpload?.public_id,
-        };
-        await fs.remove(bookImage.tempFilePath);
+    try {
+        if (request.files?.bookImage) {
+            const { bookImage } = request.files;
+            const resultUpload = await uploadImageToCloudinary(
+                bookImage.tempFilePath
+            );
+            image = {
+                urlImage: resultUpload?.secure_url,
+                publicId: resultUpload?.public_id,
+            };
+            await fs.remove(bookImage.tempFilePath);
+        }
+
+        const newBook = new Book({
+            bookName,
+            author,
+            image,
+        });
+
+        const newBookSaved = await newBook.save();
+
+        response.send({
+            message: "Book created successfully",
+            id: newBookSaved._id,
+            title: newBookSaved.bookName,
+            author: newBookSaved.author,
+            image: newBookSaved.image,
+        });
+    } catch (error) {
+        response.status(500).send({ message: error.message });
     }
-
-    const newBook = new Book({
-        bookName,
-        author,
-        image,
-    });
-
-    const newBookSaved = await newBook.save();
-
-    response.send({
-        message: "Book created successfully",
-        id: newBookSaved._id,
-        title: newBookSaved.bookName,
-        author: newBookSaved.author,
-        image: newBookSaved.image,
-    });
 };
 
 export const deleteBook = async (request, response) => {
@@ -85,3 +89,7 @@ export const deleteBook = async (request, response) => {
         throw new Error(`Error deleting book with id ${bookId}`);
     }
 };
+
+export const updateBook = async (request, response) => {
+    // TODO: Build this function
+}
