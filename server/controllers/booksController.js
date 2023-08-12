@@ -30,8 +30,27 @@ export const getBookById = async (request, response) => {
     });
 };
 
+export const getBooksByUser = async (request, response) => {
+    const { userCreatorId } = request.body;
+    console.log("userCreatorId", userCreatorId)
+
+    const books = await Book.find({ userCreatorId });
+
+    console.log("books", books)
+
+    if(!books) return response.status(404).send({ message: "Books not found" });
+
+    response.send({
+        message: "Books retrieved successfully",
+        books,
+        userCreatorId
+    });
+}
+
 export const createBook = async (request, response) => {
-    const { bookName, author } = request.body;
+    console.log("Body en controller", request.body);
+
+    const { bookName, author, userCreatorId } = request.body;
     let image;
 
     try {
@@ -51,6 +70,7 @@ export const createBook = async (request, response) => {
             bookName,
             author,
             image,
+            userCreatorId,
         });
 
         const newBookSaved = await newBook.save();
@@ -61,6 +81,7 @@ export const createBook = async (request, response) => {
             title: newBookSaved.bookName,
             author: newBookSaved.author,
             image: newBookSaved.image,
+            userCreatorId: newBookSaved.user,
         });
     } catch (error) {
         response.status(500).send({ message: error.message });
@@ -92,4 +113,4 @@ export const deleteBook = async (request, response) => {
 
 export const updateBook = async (request, response) => {
     // TODO: Build this function
-}
+};
