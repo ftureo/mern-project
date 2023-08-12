@@ -85,3 +85,8 @@ export const login = async (request, response) => {
         response.status(500).json({ message: error.message });
     }
 };
+
+export const logout = async (request, response) => {
+    response.cookie("access_token");
+    response.status(200).json({ message: "User logged out" });
+}
